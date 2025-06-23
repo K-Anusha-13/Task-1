@@ -16,4 +16,4 @@ This project is a database schema for a Pet Adoption system. It is part of Task-
 ## 🔧 How to Run
 Open MySQL Workbench and run:
 USE task_1;
-SOURCE task1_petadoption.sql.sql;
+SOURCE task1_petadoption.sql;
