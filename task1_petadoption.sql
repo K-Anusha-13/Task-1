@@ -1,20 +1,20 @@
 USE task_1;
 
-DROP TABLE IF EXISTS MedicalRecord;
-DROP TABLE IF EXISTS Adoption;
-DROP TABLE IF EXISTS AdoptionRequest;
-DROP TABLE IF EXISTS Pet;
-DROP TABLE IF EXISTS Adopter;
-DROP TABLE IF EXISTS Shelter;
+DROP TABLE IF EXISTS medicalRecord;
+DROP TABLE IF EXISTS adoption;
+DROP TABLE IF EXISTS adoptionrequest;
+DROP TABLE IF EXISTS pet;
+DROP TABLE IF EXISTS adopter;
+DROP TABLE IF EXISTS shelter;
 
-CREATE TABLE Shelter (
+CREATE TABLE shelter (
   shelter_id INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(100),
   location VARCHAR(255),
   capacity INT
 );
 
-CREATE TABLE Pet (
+CREATE TABLE pet (
   pet_id INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(50),
   species VARCHAR(50),
@@ -22,90 +22,89 @@ CREATE TABLE Pet (
   age INT,
   health_status VARCHAR(50),
   shelter_id INT,
-  FOREIGN KEY (shelter_id) REFERENCES Shelter(shelter_id)
+  FOREIGN KEY (shelter_id) REFERENCES shelter(shelter_id)
     ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
-CREATE TABLE Adopter (
+CREATE TABLE adopter (
   adopter_id INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(100),
   contact VARCHAR(100),
   address VARCHAR(255)
 );
 
-CREATE TABLE AdoptionRequest (
+CREATE TABLE adoptionrequest (
   request_id INT PRIMARY KEY AUTO_INCREMENT,
   pet_id INT,
   adopter_id INT,
   request_date DATE,
   status ENUM('Pending','Approved','Rejected'),
   remarks TEXT,
-  FOREIGN KEY (pet_id) REFERENCES Pet(pet_id)
+  FOREIGN KEY (pet_id) REFERENCES pet(pet_id)
     ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (adopter_id) REFERENCES Adopter(adopter_id)
+  FOREIGN KEY (adopter_id) REFERENCES adopter(adopter_id)
     ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
-CREATE TABLE Adoption (
+CREATE TABLE adoption (
   adoption_id INT PRIMARY KEY AUTO_INCREMENT,
   pet_id INT,
   adopter_id INT,
   adoption_date DATE,
   documents TEXT,
-  FOREIGN KEY (pet_id) REFERENCES Pet(pet_id)
+  FOREIGN KEY (pet_id) REFERENCES pet(pet_id)
     ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (adopter_id) REFERENCES Adopter(adopter_id)
+  FOREIGN KEY (adopter_id) REFERENCES adopter(adopter_id)
     ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
-CREATE TABLE MedicalRecord (
+CREATE TABLE medicalrecord (
   record_id INT PRIMARY KEY AUTO_INCREMENT,
   pet_id INT,
   veterinarian VARCHAR(100),
   diagnosis TEXT,
   treatment_date DATE,
-  FOREIGN KEY (pet_id) REFERENCES Pet(pet_id)
+  FOREIGN KEY (pet_id) REFERENCES pet(pet_id)
     ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- 📦 Sample Data Inserts
-INSERT INTO Shelter (name, location, capacity) VALUES
+INSERT INTO shelter (name, location, capacity) VALUES
   ('Happy Paws Shelter', 'City Center', 50),
   ('Furry Friends Haven', 'Suburbia', 30);
 
-INSERT INTO Pet (name, species, breed, age, health_status, shelter_id) VALUES
+INSERT INTO pet (name, species, breed, age, health_status, shelter_id) VALUES
   ('Bingo', 'Dog', 'Beagle', 3, 'Vaccinated', 1),
   ('Whiskers', 'Cat', 'Siamese', 2, 'Healthy', 2);
 
-INSERT INTO Adopter (name, contact, address) VALUES
+INSERT INTO adopter (name, contact, address) VALUES
   ('John Doe', 'john@example.com', '101 Main St'),
   ('Jane Smith', 'jane@example.com', '202 Oak Rd');
 
-INSERT INTO AdoptionRequest (pet_id, adopter_id, request_date, status, remarks) VALUES
+INSERT INTO adoptionrequest (pet_id, adopter_id, request_date, status, remarks) VALUES
   (1, 2, '2025-06-20', 'Pending', 'Loves medium dogs'),
   (2, 1, '2025-06-21', 'Approved', 'Has cat experience');
 
-INSERT INTO Adoption (pet_id, adopter_id, adoption_date, documents) VALUES
+INSERT INTO adoption (pet_id, adopter_id, adoption_date, documents) VALUES
   (2, 1, '2025-06-23', 'Contract A123');
 
-INSERT INTO MedicalRecord (pet_id, veterinarian, diagnosis, treatment_date) VALUES
+INSERT INTO medicalrecord (pet_id, veterinarian, diagnosis, treatment_date) VALUES
   (1, 'Dr. Smith', 'Routine check-up', '2025-06-22');
 
 SELECT p.name AS pet, p.species, s.name AS shelter
-FROM Pet p
-JOIN Shelter s ON p.shelter_id = s.shelter_id;
+FROM pet p
+JOIN shelter s ON p.shelter_id = s.shelter_id;
 
 SELECT ar.request_id, a.name AS adopter, p.name AS pet, ar.status
-FROM AdoptionRequest ar
-JOIN Adopter a ON ar.adopter_id = a.adopter_id
-JOIN Pet p ON ar.pet_id = p.pet_id
+FROM adoptionrequest ar
+JOIN adopter a ON ar.adopter_id = a.adopter_id
+JOIN pet p ON ar.pet_id = p.pet_id
 WHERE ar.status = 'Pending';
 
 SELECT ad.adoption_id, p.name AS pet, a.name AS adopter, ad.documents
-FROM Adoption ad
-JOIN Pet p ON ad.pet_id = p.pet_id
-JOIN Adopter a ON ad.adopter_id = a.adopter_id;
+FROM adoption ad
+JOIN pet p ON ad.pet_id = p.pet_id
+JOIN adopter a ON ad.adopter_id = a.adopter_id;
 
 SELECT m.record_id, p.name AS pet, m.veterinarian, m.diagnosis, m.treatment_date
-FROM MedicalRecord m
-JOIN Pet p ON m.pet_id = p.pet_id;
+FROM medicalrecord m
+JOIN pet p ON m.pet_id = p.pet_id;
